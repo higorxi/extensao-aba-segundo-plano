@@ -1,0 +1,97 @@
+body {
+  font-family: Arial, sans-serif;
+  margin: 0;
+  padding: 1.5rem;
+  width: 400px;
+  background-color: white; /* Fundo branco */
+}
+
+.popup-title {
+  text-align: center;
+  background-color: white; /* Fundo branco */
+  padding: 10px;
+  border-bottom: none; /* Remover bordas inferiores */
+}
+
+.popup-container {
+  margin: 20px auto;
+  padding: 20px;
+  background-color: white; /* Fundo branco */
+  border-radius: 10px; /* Cantos arredondados */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Adicionar sombra */
+  max-width: 400px; /* Largura máxima */
+}
+
+.popup-container1 {
+  background-color: white; 
+  padding: 1rem;
+  border: none; /* Remover bordas */
+}
+
+#titleTabs {
+  text-align: left;
+  color: black;
+}
+
+.popup-container1:not(:first-child) {
+  margin-top: 1.2rem; /* Espaçamento entre as divs */
+}
+
+#currentTabs {
+  text-align: left;
+}
+
+h1 {
+  font-size: 24px;
+  margin-bottom: 20px;
+}
+
+h2 {
+  font-size: 20px;
+  margin-bottom: 10px;
+}
+
+#tabListActions1,
+#tabListActions2,
+#tabListConfig {
+  list-style: none;
+  padding: 0;
+  font-size: larger;
+}
+
+.first-tablist{
+  margin-bottom: 2rem;
+}
+
+#tabListActions1 li,
+#tabListActions2 li,
+#tabListConfig li {
+  margin-bottom: 10px;
+  font-size: medium;
+}
+
+#tabListActions1 a,
+#tabListActions2 a {
+  text-decoration: none;
+  color: blue;
+}
+
+input[type="radio"],
+input[type="checkbox"] {
+  margin-right: 5px;
+}
+
+button {
+  display: block;
+  margin: 20px auto;
+  padding: 10px 20px;
+  background-color: #007bff; /* Azul */
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+button:hover {
+  background-color: #0056b3; /* Azul mais escuro no hover */
+}

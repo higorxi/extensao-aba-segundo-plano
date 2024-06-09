@@ -1,0 +1,39 @@
+{
+  "manifest_version": 3,
+  "name": "LinkIN",
+  "description": "Extensão de abertura de abas em segundo plano",
+  "version": "1.0",
+  "permissions": [
+    "tabs",
+    "activeTab",
+    "scripting",
+    "contextMenus",
+    "history",
+    "tabGroups",
+    "favicon",
+    "background",
+    "storage",
+    "nativeMessaging"
+  ],
+  "action": {
+    "default_popup": "/popup/popup.html",
+    "default_icon": {
+      "16":"/images/icone.png",
+      "48":"/images/icone.png",
+      "128":"/images/icone.png"
+    }
+  },
+  "icons": {
+    "48": "/images/icone.png"
+  },
+  "content_scripts": [
+    {
+      "js": ["scripts/content.js"],
+      "matches": ["https://developer.chrome.com/docs/extensions/*", "https://developer.chrome.com/docs/webstore/*"]
+    }
+  ],
+  "host_permissions": ["http://*/*", "https://*/*", "https://developer.chrome.com/*"],
+  "background": {
+    "service_worker": "sample.js"
+  }
+}

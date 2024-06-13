@@ -1,38 +1,59 @@
+// Função para inicializar o popup com as configurações salvas
+function inicializarPopup() {
+  // Configurações de posição dos radio buttons
+  chrome.storage.sync.get(['linkPosition', 'openOnClick', 'activateOnExit'], function (data) {
+    if (data.linkPosition) {
+      // Seleciona o radio button com base no valor recuperado
+      document.querySelector('input[name="linkPosition"][value="' + data.linkPosition + '"]').checked = true;
+    }
 
-document.getElementById("activateAll").addEventListener("click", ativarTodasAbas);
+    if (data.openOnClick) {
+      document.getElementById('openOnClick').checked = data.openOncClick === 'true';
+    }
 
-document.getElementById("desactivateAll").addEventListener("click", desativarTodasAbas);
-
-document.getElementById("confirmButton").addEventListener("click", configuracoes);
-
-document.getElementById("activateSelected").addEventListener("click", ativarSelecionadas)
-
-document.getElementById("desactivateSelected").addEventListener("click", desativarSelecionadas)
-
-
-// Função para ativar todas as abas inativas
-function ativarTodasAbas(event) {
-    event.preventDefault();
-    chrome.runtime.sendMessage({ type: "activateTabs" });
+    if (data.activateOnExit) {
+      document.getElementById('activateOnExit').checked = data.activateOnExit === 'true';
+    }
+  });
 }
 
-function desativarTodasAbas(event) {
-    event.preventDefault();
-    chrome.runtime.sendMessage({ type: "inactivateTabs" });
-}
+// Adicionar listener para o botão de fechar
+document.getElementById('closeButton').addEventListener('click', function () {
+  window.close();
+});
 
-function configuracoes(event) {
-    event.preventDefault();
-    chrome.runtime.sendMessage({ type: "configuracoes", positionLink: document.querySelector('input[name="linkPosition"]:checked').value})
-    window.close();
-}
+// Adicionar listener para salvar configurações do radio button ao alterar
+const radioButtons = document.querySelectorAll('input[name="linkPosition"]');
+radioButtons.forEach((radioButton) => {
+  radioButton.addEventListener('change', function () {
+    const value = this.value;
 
-function ativarSelecionadas(event) {
-    event.preventDefault();
-    chrome.runtime.sendMessage({ type: "ativarSelecionadas"})
-}
+    const items = {
+      linkPosition: value,
+    };
 
-function desativarSelecionadas(event) {
-    event.preventDefault();
-    chrome.runtime.sendMessage({ type: "desativarSelecionadas"})
-}
+    chrome.storage.sync.set(items);
+
+    chrome.runtime.sendMessage({ type: "configuracoes", ...items });
+    
+  });
+});
+
+// Adicionar listener para salvar configurações dos checkboxes ao alterar
+const checkboxes = document.querySelectorAll('input[type="checkbox"]');
+checkboxes.forEach((checkbox) => {
+  checkbox.addEventListener('change', function () {
+    const id = this.id;
+    const value = this.checked.toString();
+
+    const items = {};
+    items[id] = value;
+    
+    chrome.runtime.sendMessage({ type: "configuracoesAcessoAba", ...items });
+  });
+});
+
+// Inicializar o popup com as configurações armazenadas ao carregar
+document.addEventListener('DOMContentLoaded', function () {
+  inicializarPopup();
+});

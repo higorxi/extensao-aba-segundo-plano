@@ -1,5 +1,37 @@
 const pageObjectsArray = [];
-var positionForPageHTML = 'center';
+
+// Variável para armazenar a posição recuperada
+let positionForPageHTML = '';
+let activeInEnterPage = null;
+let desactivePageInExit = null;
+
+// Função para obter e configurar a posição inicial
+function obterPosicaoInicial() {
+  chrome.storage.sync.get('linkPosition', function(data) {
+    if (data.linkPosition) {
+      positionForPageHTML = data.linkPosition;
+    } else {
+      positionForPageHTML = 'center';
+      console.log('Nenhuma posição inicial encontrada no armazenamento.');
+    }
+  });
+
+  chrome.storage.sync.get(['openOnClick', 'activateOnExit'], function(data) {
+    if (data.openOnClick !== undefined && data.activateOnExit !== undefined) {
+      activeInEnterPage = data.openOnClick
+      desactivePageInExit  = data.activateOnExit
+    } else {
+      activeInEnterPage = false
+      desactivePageInExit  = false
+      console.log('Nenhuma posição inicial encontrada no armazenamento.');
+    }
+  });
+}
+
+// Listener para quando a extensão é iniciada
+chrome.runtime.onInstalled.addListener(function() {
+  obterPosicaoInicial();
+});
 
 chrome.runtime.onInstalled.addListener(() => {
   chrome.contextMenus.create({
@@ -15,7 +47,6 @@ chrome.runtime.onInstalled.addListener(() => {
     { id: 'inactivateTabs', title: 'Desativar LinkIN em todas as guias' },
     { id: 'ativarSelecionadas', title: 'Ativar LinkIN nas guias selecionadas' },
     { id: 'desativarSelecionadas', title: 'Desativar LinkIN nas guias selecionadas' },
-    { id: 'abrirPopup', title: 'Abrir PoPup de configuração'}
   ];
 
   contextMenuItems.forEach((item) => {
@@ -43,9 +74,6 @@ chrome.contextMenus.onClicked.addListener((info, tab) => {
     case 'desativarSelecionadas':
       desativarTodasAbasSelecionadas();
       break;
-    case 'abrirPopup':
-      console.log('Open')
-      break
     default:
       console.log('Item do menu de contexto desconhecido');
   }
@@ -410,9 +438,26 @@ function desativarTodasAbasSelecionadas() {
   }
 }
 
-chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
+function configuracoesOpenOnClick(config) {
+  try {
+    activeInEnterPage = config;
+  } catch (e) {
+    console.error('Error configuracoesOpenOnClick:', e);
+  }
+}
+
+function configuracoesActivateOnExit(config) {
+  try {
+    desactivePageInExit = config;
+  } catch (e) {
+    console.error('Error configuracoesActivateOnExit:', e);
+  }
+}
+
+
+chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
   if (request.type === 'configuracoes') {
-    switch (request.positionLink) {
+    switch (request.linkPosition) {
       case 'center':
         configuracoesCenter(positionForPageHTML);
         break;
@@ -427,4 +472,21 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
         break;
     }
   }
+
+    if (request.openOnClick !== undefined) {
+      if (request.openOnClick) {
+        configuracoesOpenOnClick(request.openOnClick);
+      } else {
+        console.error('Erro ao configurar o abrir site ao clicar na guia:', e);
+      }
+    }
+
+    if (request.activateOnExit !== undefined) {
+      if (request.activateOnExit) {
+        configuracoesActivateOnExit(request.activateOnExit);
+      } else {
+        console.error('Erro ao configurar o ativar LinkIN na saída de abas:', e);
+      }
+    }
+
 });

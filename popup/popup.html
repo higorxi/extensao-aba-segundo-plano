@@ -1,80 +1,49 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Configurar Título da Página</title>
-    <link rel="stylesheet" href="popup.css" />
-  </head>
-  <body>
-    <div class="popup-container1 title">
-      <div id="titleTabs">
-        <h1>Ações</h1>
-      </div>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Configurar Título da Página</title>
+  <link rel="stylesheet" href="popup.css" />
+</head>
+<body>
+  <div class="popup-container1 title">
+    <div id="titleTabs">
+      <h1>Opções</h1>
+      <span id="closeButton" class="close-btn">X</span>
     </div>
+  </div>
 
-    <div class="popup-container1">
-      <div id="currentTabs">
-        <ul id="tabListActions1">
-          <li>
-            <a href="#" id="activateAll">Ativar abas inativas</a>
-          </li>
-          <li>
-            <a href="#" id="desactivateAll">Inativar abas ativas</a>
-          </li>
-        </ul>
-      </div>
+  <div class="popup-container1">
+    <div id="currentTabs">
+      <ul id="tabListConfig" class="first-tablist">
+        <li>
+          <input type="radio" id="linkCenter" name="linkPosition" value="center" />
+          <label for="linkCenter">LinkIN no centro</label>
+        </li>
+        <li>
+          <input type="radio" id="linkLeft" name="linkPosition" value="left" />
+          <label for="linkLeft">Na esquerda</label>
+        </li>
+        <li>
+          <input type="radio" id="linkRight" name="linkPosition" value="right" />
+          <label for="linkRight">Na direita</label>
+        </li>
+      </ul>
+
+      <ul id="tabListConfig">
+        <li>
+          <input type="checkbox" id="openOnClick" name="openOnClick" />
+          <label for="openOnClick">Abrir site ao clicar na guia</label>
+        </li>
+        <li>
+          <input type="checkbox" id="activateOnExit" name="activateOnExit" />
+          <label for="activateOnExit">Ativar LinkIN ao sair da aba</label>
+        </li>
+      </ul>
     </div>
+  </div>
 
-    <div class="popup-container1">
-      <div id="currentTabs">
-        <ul id="tabListActions2">
-          <li><a href="#" id="activateSelected">Ativar abas selecionadas</a></li>
-          <li><a href="#" id="desactivateSelected">Inativar abas selecionadas</a></li>
-        </ul>
-      </div>
-    </div>
-
-    <div class="popup-container1 title">
-      <div id="titleTabs">
-        <h1>Opções</h1>
-      </div>
-    </div>
-
-    <div class="popup-container1">
-      <div id="currentTabs">
-        <ul id="tabListConfig" class="first-tablist">
-          <li>
-            <input type="radio" id="linkCenter" name="linkPosition" value="center" checked />
-            <label>LinkIN no centro</label>
-          </li>
-          <li>
-            <input type="radio" id="linkLeft" name="linkPosition" value="left" />
-            <label>Na esquerda</label>
-          </li>
-          <li>
-            <input type="radio" id="linkRight" name="linkPosition" value="right" />
-            <label>Na direita</label>
-          </li>
-        </ul>
-
-        <ul id="tabListConfig">
-          <li>
-            <input type="checkbox" id="linkCenter" name="linkPosition" value="center" checked />
-            <label>Abrir site ao clicar na guia</label>
-          </li>
-          <li>
-            <input type="checkbox" id="linkLeft" name="linkPosition" value="left" />
-            <label>Ativar LinkIN ao sair da aba</label>
-          </li>
-        </ul>
-      </div>
-    </div>
-
-    <div class="popup-container">
-      <button id="confirmButton">Confirmar</button>
-    </div>
-
-    <script type="module" src="./popup.js"></script>
-  </body>
+  <script type="module" src="./popup.js"></script>
+</body>
 </html>

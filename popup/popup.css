@@ -1,3 +1,5 @@
+/* Estilos adicionais para o popup */
+
 body {
   font-family: Arial, sans-serif;
   margin: 0;
@@ -23,7 +25,7 @@ body {
 }
 
 .popup-container1 {
-  background-color: white; 
+  background-color: white;
   padding: 1rem;
   border: none; /* Remover bordas */
 }
@@ -31,10 +33,20 @@ body {
 #titleTabs {
   text-align: left;
   color: black;
+  display: flex;
+  justify-content: space-between; /* Alinhar itens à esquerda e à direita */
+  align-items: center; /* Centralizar verticalmente */
 }
 
-.popup-container1:not(:first-child) {
-  margin-top: 1.2rem; /* Espaçamento entre as divs */
+#closeButton {
+  cursor: pointer;
+  font-size: 24px;
+  font-weight: bold;
+  color: #007bff; /* Cor azul */
+}
+
+#closeButton:hover {
+  color: #0056b3; /* Cor azul mais escura no hover */
 }
 
 #currentTabs {
@@ -51,6 +63,18 @@ h2 {
   margin-bottom: 10px;
 }
 
+/* Aumentar tamanho dos checkboxes e radios */
+input[type="radio"],
+input[type="checkbox"] {
+  margin-right: 5px;
+  transform: scale(1.5); /* Aumenta o tamanho dos inputs */
+}
+
+/* Ajustar tamanho dos textos dos labels */
+label {
+  font-size: 18px; /* Tamanho do texto */
+}
+
 #tabListActions1,
 #tabListActions2,
 #tabListConfig {
@@ -59,7 +83,7 @@ h2 {
   font-size: larger;
 }
 
-.first-tablist{
+.first-tablist {
   margin-bottom: 2rem;
 }
 
@@ -74,11 +98,6 @@ h2 {
 #tabListActions2 a {
   text-decoration: none;
   color: blue;
-}
-
-input[type="radio"],
-input[type="checkbox"] {
-  margin-right: 5px;
 }
 
 button {

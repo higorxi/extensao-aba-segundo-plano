@@ -1,4 +1,4 @@
-const pageObjectsArray = [];
+let pageObjectsArray = [];
 
 // Variável para armazenar a posição recuperada
 let positionForPageHTML = '';
@@ -10,8 +10,9 @@ function obterPosicaoInicial() {
   chrome.storage.sync.get('linkPosition', function(data) {
     if (data.linkPosition) {
       positionForPageHTML = data.linkPosition;
-    } else {
+    } else if(data.linkPosition === undefined 	|| data.linkPosition === null){
       positionForPageHTML = 'center';
+    } else {  
       console.log('Nenhuma posição inicial encontrada no armazenamento.');
     }
   });
@@ -344,31 +345,60 @@ function ativarTodasAbas() {
 
 function desativarTodasAbas() {
   try {
-    pageObjectsArray.forEach((pageObject) => {
-      const id = pageObject.id;
-      const url = pageObject.inactivePage;
+    const updatedPageObjectsArray = [];
 
-      chrome.tabs.get(id, (tab) => {
-        if (tab) {
-          chrome.tabs.remove(id, () => {
-            chrome.tabs.create({ url: url, active: false }, (newTab) => {
-              const newPageObject = {
-                id: newTab.id,
-                pageTitle: newTab.pageTitle,
-                pageUrlActive: pageObject.pageUrlActive,
-                inactivePage: url,
-              };
-              pageObjectsArray.push(newPageObject);
+    // Cria uma lista de promessas para todas as operações de aba
+    const promises = pageObjectsArray.map((pageObject) => {
+      return new Promise((resolve, reject) => {
+        const id = pageObject.id;
+        const url = pageObject.inactivePage;
+
+        chrome.tabs.get(id, (tab) => {
+          if (tab) {
+            const index = tab.index;
+            chrome.tabs.remove(id, () => {
+              if (chrome.runtime.lastError) {
+                console.error(`Erro ao remover a aba: ${chrome.runtime.lastError.message}`);
+                reject(chrome.runtime.lastError);
+                return;
+              }
+              chrome.tabs.create({ url: url, active: false, index: index }, (newTab) => {
+                if (chrome.runtime.lastError) {
+                  console.error(`Erro ao criar a nova aba: ${chrome.runtime.lastError.message}`);
+                  reject(chrome.runtime.lastError);
+                  return;
+                }
+                const newPageObject = {
+                  id: newTab.id,
+                  pageTitle: newTab.title,
+                  pageUrlActive: pageObject.pageUrlActive,
+                  inactivePage: url,
+                };
+                updatedPageObjectsArray.push(newPageObject);
+                resolve();
+              });
             });
-          });
-        } else {
-          const index = pageObjectsArray.findIndex((obj) => obj.id === id);
-          if (index !== -1) {
-            pageObjectsArray.splice(index, 1);
+          } else {
+            const index = pageObjectsArray.findIndex((obj) => obj.id === id);
+            if (index !== -1) {
+              pageObjectsArray.splice(index, 1);
+            }
+            resolve();
           }
-        }
+        });
       });
     });
+
+    // Espera todas as promessas serem resolvidas
+    Promise.all(promises)
+      .then(() => {
+        pageObjectsArray.length = 0; 
+        Array.prototype.push.apply(pageObjectsArray, updatedPageObjectsArray); 
+      })
+      .catch((error) => {
+        console.error('Erro ao desativar abas:', error);
+      });
+
   } catch (e) {
     console.error('Erro ao desativar abas:', e);
   }
@@ -415,23 +445,51 @@ function ativarTodasAbasSelecionadas() {
 
 function desativarTodasAbasSelecionadas() {
   try {
+    const updatedPageObjectsArray = [];
+
     chrome.tabs.query({ highlighted: true }, function (highlightedTabs) {
-      highlightedTabs.forEach(function (tab) {
-        const pageObject = pageObjectsArray.find((obj) => obj.id === tab.id);
-        if (pageObject && pageObject.inactivePage) {
-          chrome.tabs.remove(tab.id, () => {
-            chrome.tabs.create({ url: pageObject.inactivePage, active: false }, (newTab) => {
-              const newPageObject = {
-                id: newTab.id,
-                pageTitle: newTab.pageTitle,
-                pageUrlActive: pageObject.pageUrlActive,
-                inactivePage: pageObject.inactivePage,
-              };
-              pageObjectsArray.push(newPageObject);
+      const promises = highlightedTabs.map((tab) => {
+        return new Promise((resolve, reject) => {
+          const pageObject = pageObjectsArray.find((obj) => obj.id === tab.id);
+          if (pageObject && pageObject.inactivePage) {
+            const index = tab.index;
+            chrome.tabs.remove(tab.id, () => {
+              if (chrome.runtime.lastError) {
+                console.error(`Erro ao remover a aba: ${chrome.runtime.lastError.message}`);
+                reject(chrome.runtime.lastError);
+                return;
+              }
+              chrome.tabs.create({ url: pageObject.inactivePage, active: false, index: index }, (newTab) => {
+                if (chrome.runtime.lastError) {
+                  console.error(`Erro ao criar a nova aba: ${chrome.runtime.lastError.message}`);
+                  reject(chrome.runtime.lastError);
+                  return;
+                }
+                const newPageObject = {
+                  id: newTab.id,
+                  pageTitle: newTab.title,
+                  pageUrlActive: pageObject.pageUrlActive,
+                  inactivePage: pageObject.inactivePage,
+                };
+                updatedPageObjectsArray.push(newPageObject);
+                resolve();
+              });
             });
-          });
-        }
+          } else {
+            resolve();
+          }
+        });
       });
+
+      // Espera todas as promessas serem resolvidas
+      Promise.all(promises)
+        .then(() => {
+          pageObjectsArray = pageObjectsArray.filter((obj) => !highlightedTabs.some((tab) => tab.id === obj.id));
+          Array.prototype.push.apply(pageObjectsArray, updatedPageObjectsArray);
+        })
+        .catch((error) => {
+          console.error('Erro ao desativar abas selecionadas:', error);
+        });
     });
   } catch (e) {
     console.error('Erro ao desativar abas selecionadas:', e);
